@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
 )
 

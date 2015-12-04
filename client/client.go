@@ -11,9 +11,9 @@ import (
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
 	"github.com/mondough/mercury/transport"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
+	tperrors "github.com/mondough/terrors/proto"
 	tmsg "github.com/mondough/typhon/message"
-	tperrors "github.com/mondough/typhon/proto/error"
 )
 
 const defaultTimeout = 10 * time.Second

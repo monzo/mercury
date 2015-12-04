@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/mondough/mercury"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 )
 
 const (

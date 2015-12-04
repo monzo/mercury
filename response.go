@@ -1,9 +1,9 @@
 package mercury
 
 import (
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
+	tperrors "github.com/mondough/terrors/proto"
 	tmsg "github.com/mondough/typhon/message"
-	tperrors "github.com/mondough/typhon/proto/error"
 
 	"github.com/mondough/mercury/marshaling"
 )

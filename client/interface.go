@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/transport"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 )
 
 // A Client is a convenient way to make Requests (potentially in parallel) and access their Responses/Errors.

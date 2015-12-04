@@ -11,7 +11,7 @@ import (
 	"github.com/mondough/mercury/marshaling"
 	"github.com/mondough/mercury/testproto"
 	"github.com/mondough/mercury/transport"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
 	"github.com/mondough/typhon/mock"
 	"github.com/mondough/typhon/rabbit"

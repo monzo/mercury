@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	log "github.com/cihub/seelog"
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
 
 	"github.com/mondough/mercury"

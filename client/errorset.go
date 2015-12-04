@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	terrors "github.com/mondough/typhon/errors"
+	"github.com/mondough/terrors"
 )
 
 const (
