@@ -224,7 +224,15 @@ func (suite *serverSuite) TestEndpointNotFound() {
 
 // TestRegisteringInvalidEndpoint tests that appropriate panics are raised when registering invalid Endpoints
 func (suite *serverSuite) TestRegisteringInvalidEndpoint() {
-	suite.T().Skip("Not implemented") // @TODO
+	srv := suite.server
+
+	// An endpoint with no handler
+	suite.Assert().Panics(func() {
+		srv.AddEndpoints(Endpoint{
+			Name:     "foo",
+			Request:  new(testproto.DummyRequest),
+			Response: new(testproto.DummyResponse)})
+	})
 }
 
 // TestRoutingParallel sends a bunch of requests in parallel to different endpoints and checks that the responses match
