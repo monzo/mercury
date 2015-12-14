@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -58,6 +59,13 @@ func (s *server) Name() string {
 }
 
 func (s *server) AddEndpoints(eps ...Endpoint) {
+	// Check the endpoint is valid (panic if not)
+	for _, ep := range eps {
+		if ep.Handler == nil {
+			panic(fmt.Sprintf("Endpoint %s has no handler function", ep.Name))
+		}
+	}
+
 	s.endpointsM.Lock()
 	defer s.endpointsM.Unlock()
 	if s.endpoints == nil {
