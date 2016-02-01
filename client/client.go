@@ -166,8 +166,7 @@ func (c *client) performCall(call clientCall, middleware []ClientMiddleware, tra
 	} else if rsp_ != nil {
 		rsp := mercury.FromTyphonResponse(rsp_)
 
-		// Servers set header Content-Error: 1 when sending errors. For those requests, unmarshal the error, leaving the
-		// call's response nil
+		// For error responses, unmarshal the error, leaving the call's response nil
 		if rsp.IsError() {
 			errRsp := rsp.Copy()
 			if unmarshalErr := c.unmarshaler(rsp, &tperrors.Error{}).UnmarshalPayload(errRsp); unmarshalErr != nil {

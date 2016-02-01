@@ -177,3 +177,7 @@ func (es ErrorSet) Error() string {
 	}
 	return ""
 }
+
+func (es ErrorSet) String() string {
+	return es.Error()
+}
