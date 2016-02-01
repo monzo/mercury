@@ -3,7 +3,6 @@ package transport
 import (
 	"sync"
 
-	"github.com/mondough/typhon/mock"
 	ttrans "github.com/mondough/typhon/transport"
 )
 
@@ -13,10 +12,6 @@ var (
 	defaultTransport  Transport
 	defaultTransportM sync.RWMutex
 )
-
-func init() {
-	SetDefaultTransport(mock.NewTransport())
-}
 
 // DefaultTransport returns the global default transport, over which servers and clients should run by default
 func DefaultTransport() Transport {
