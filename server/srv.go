@@ -5,14 +5,15 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/cihub/seelog"
+	log "github.com/mondough/slog"
+	"github.com/mondough/terrors"
+	tmsg "github.com/mondough/typhon/message"
+	ttrans "github.com/mondough/typhon/transport"
+	"golang.org/x/net/context"
 	"gopkg.in/tomb.v2"
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/transport"
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
-	ttrans "github.com/mondough/typhon/transport"
 )
 
 const (
@@ -104,6 +105,8 @@ func (s *server) Endpoint(name string) (Endpoint, bool) {
 }
 
 func (s *server) start(trans transport.Transport) (*tomb.Tomb, error) {
+	ctx := context.Background()
+
 	s.workerTombM.Lock()
 	if s.workerTomb != nil {
 		s.workerTombM.Unlock()
@@ -128,7 +131,7 @@ func (s *server) start(trans transport.Transport) (*tomb.Tomb, error) {
 			return trans.Listen(s.Name(), inbound)
 
 		case <-time.After(connectTimeout):
-			log.Warnf("[Mercury:Server] Timed out after %s waiting for transport readiness", connectTimeout.String())
+			log.Warn(ctx, "[Mercury:Server] Timed out after %v waiting for transport readiness", connectTimeout)
 			return ttrans.ErrTimeout
 		}
 	}
@@ -147,9 +150,9 @@ func (s *server) start(trans transport.Transport) (*tomb.Tomb, error) {
 			case req, ok := <-inbound:
 				if !ok {
 					// Received because the channel closed; try to reconnect
-					log.Warn("[Mercury:Server] Inbound channel closed; trying to reconnect…")
+					log.Warn(ctx, "[Mercury:Server] Inbound channel closed; trying to reconnect…")
 					if err := connect(); err != nil {
-						log.Criticalf("[Mercury:Server] Could not reconnect after channel close: %s", err)
+						log.Critical(ctx, "[Mercury:Server] Could not reconnect after channel close: %s", err)
 						return err
 					}
 				} else {
@@ -218,15 +221,15 @@ func (s *server) handle(trans transport.Transport, req_ tmsg.Request) {
 
 	if rsp == nil {
 		if ep, ok := s.Endpoint(req.Endpoint()); !ok {
-			log.Warnf("[Mercury:Server] Received request %s for unknown endpoint %s", req.Id(), req.Endpoint())
+			log.Warn(req, "[Mercury:Server] Received request %s for unknown endpoint %s", req.Id(), req.Endpoint())
 			rsp = ErrorResponse(req, errEndpointNotFound)
 		} else {
 			if rsp_, err := ep.Handle(req); err != nil {
-				log.Debugf("[Mercury:Server] Got error from endpoint %s for request %s: %v", ep.Name, req.Id(), err)
 				rsp = ErrorResponse(req, err)
-				// @todo happy to remove this verbose logging once we have tracing... For now it will allow us to debug things
-				log.Debugf("[Mercury:Server] Full request: %+v", req.Body())
-				log.Debugf("[Mercury:Server] Full error: %+v", rsp.Body())
+				log.Info(req, "[Mercury:Server] Got error from endpoint %s for request %s: %v", ep.Name, req.Id(), err,
+					map[string]string{
+						"request_body":  fmt.Sprintf("%+v", req.Body()),
+						"response_body": fmt.Sprintf("%+v", rsp.Body())})
 			} else if rsp_ == nil {
 				rsp = req.Response(nil)
 			} else {
@@ -273,7 +276,7 @@ func ErrorResponse(req mercury.Request, err error) mercury.Response {
 	}
 	rsp.SetBody(terrors.Marshal(terr))
 	if err := tmsg.ProtoMarshaler().MarshalBody(rsp); err != nil {
-		log.Errorf("[Mercury:Server] Failed to marshal error response: %v", err)
+		log.Error(req, "[Mercury:Server] Failed to marshal error response: %v", err)
 		return nil // Not much we can do here
 	}
 	rsp.SetIsError(true)

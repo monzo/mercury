@@ -8,17 +8,17 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/mondough/terrors"
+	pe "github.com/mondough/terrors/proto"
+	tmsg "github.com/mondough/typhon/message"
+	"github.com/mondough/typhon/mock"
+	"github.com/mondough/typhon/rabbit"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
 	"github.com/mondough/mercury/testproto"
 	"github.com/mondough/mercury/transport"
-	"github.com/mondough/terrors"
-	pe "github.com/mondough/terrors/proto"
-	tmsg "github.com/mondough/typhon/message"
-	"github.com/mondough/typhon/mock"
-	"github.com/mondough/typhon/rabbit"
 )
 
 const testServiceName = "service.server-example"

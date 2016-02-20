@@ -3,9 +3,8 @@ package client
 import (
 	"testing"
 
-	"github.com/stretchr/testify/suite"
-
 	"github.com/mondough/terrors"
+	"github.com/stretchr/testify/suite"
 )
 
 func TestErrorSetSuite(t *testing.T) {

@@ -5,16 +5,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mondough/terrors"
+	tmsg "github.com/mondough/typhon/message"
+	"github.com/mondough/typhon/mock"
+	"github.com/mondough/typhon/rabbit"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
 	"github.com/mondough/mercury/testproto"
 	"github.com/mondough/mercury/transport"
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
-	"github.com/mondough/typhon/mock"
-	"github.com/mondough/typhon/rabbit"
 )
 
 const testServiceName = "service.client-example"

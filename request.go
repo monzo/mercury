@@ -4,11 +4,11 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/cihub/seelog"
+	log "github.com/mondough/slog"
+	tmsg "github.com/mondough/typhon/message"
 	"golang.org/x/net/context"
 
 	"github.com/mondough/mercury/marshaling"
-	tmsg "github.com/mondough/typhon/message"
 )
 
 const (
@@ -42,9 +42,9 @@ func responseFromRequest(req Request, body interface{}) Response {
 			marshaler = marshaling.Marshaler(marshaling.ProtoContentType)
 		}
 		if marshaler == nil {
-			log.Errorf("[Mercury] No marshaler for response %s: %s", rsp.Id(), ct)
+			log.Error(req, "[Mercury] No marshaler for response %s: %s", rsp.Id(), ct)
 		} else if err := marshaler.MarshalBody(rsp); err != nil {
-			log.Errorf("[Mercury] Failed to marshal response %s: %v", rsp.Id(), err)
+			log.Error(req, "[Mercury] Failed to marshal response %s: %v", rsp.Id(), err)
 		}
 	}
 	return rsp
@@ -61,6 +61,9 @@ func (r *request) Response(body interface{}) Response {
 }
 
 func (r *request) Context() context.Context {
+	if r == nil {
+		return nil
+	}
 	r.RLock()
 	defer r.RUnlock()
 	return r.ctx

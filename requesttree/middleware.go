@@ -1,10 +1,10 @@
 package requesttree
 
 import (
+	"github.com/mondough/terrors"
 	"golang.org/x/net/context"
 
 	"github.com/mondough/mercury"
-	"github.com/mondough/terrors"
 )
 
 const (

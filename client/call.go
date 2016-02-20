@@ -1,12 +1,12 @@
 package client
 
 import (
+	"github.com/mondough/terrors"
+	tmsg "github.com/mondough/typhon/message"
 	"golang.org/x/net/context"
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
 )
 
 // A Call is a convenient way to form a Request for an RPC call.
