@@ -158,8 +158,6 @@ func (c *client) performCall(call clientCall, middleware []ClientMiddleware, tra
 		req = md.ProcessClientRequest(req)
 	}
 
-	log.Debug(call.req, "[Mercury:Client] Sending request to %s/%s…", req.Service(), req.Endpoint())
-
 	rsp_, err := trans.Send(req, timeout)
 	if err != nil {
 		call.err = terrors.Wrap(err, nil).(*terrors.Error)
