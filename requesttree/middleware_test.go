@@ -50,8 +50,7 @@ func (suite *parentRequestIdMiddlewareSuite) SetupTest() {
 				cl := client.NewClient().
 					SetTransport(suite.trans).
 					SetMiddleware([]client.ClientMiddleware{Middleware()}).
-					Add(
-					client.Call{
+					Add(client.Call{
 						Uid:      "call",
 						Service:  testServiceName,
 						Endpoint: "foo-2",

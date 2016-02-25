@@ -114,13 +114,18 @@ func (c *client) Errors() ErrorSet {
 	errs := ErrorSet(nil)
 	for uid, call := range c.calls {
 		if call.err != nil {
-			err := call.err
+			err := *(call.err) // Modify a copy
+			copyParams := make(map[string]string, len(err.Params))
+			for k, v := range err.Params {
+				copyParams[k] = v
+			}
+			err.Params = copyParams
 			err.Params[errUidField] = uid
 			if call.req != nil {
 				err.Params[errServiceField] = call.req.Service()
 				err.Params[errEndpointField] = call.req.Endpoint()
 			}
-			errs = append(errs, err)
+			errs = append(errs, &err)
 		}
 	}
 	return errs

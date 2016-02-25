@@ -194,8 +194,7 @@ func (suite *clientSuite) TestMiddleware() {
 	mw := &testMw{}
 	client := NewClient().
 		AddMiddleware(mw).
-		Add(
-		Call{
+		Add(Call{
 			Uid:      "call1",
 			Service:  testServiceName,
 			Endpoint: "ping",
@@ -215,8 +214,7 @@ func (suite *clientSuite) TestMiddleware() {
 	suite.Assert().Nil(mw.err)
 	client = NewClient().
 		AddMiddleware(mw).
-		Add(
-		Call{
+		Add(Call{
 			Uid:      "call1",
 			Service:  testServiceName,
 			Endpoint: "error",
@@ -232,7 +230,8 @@ func (suite *clientSuite) TestMiddleware() {
 	err := client.Errors().ForUid("call1")
 	suite.Require().Error(err)
 	// ProcessClientError should have stored the error
-	suite.Assert().Equal(err, mw.err)
+	suite.Assert().Equal(err.Code, mw.err.Code)
+	suite.Assert().Equal(err.Message, mw.err.Message)
 	// ProcessClientRequest should have set X-Foo: Bar (and ping echoes the headers)
 	suite.Assert().Equal("X-Bar", rsp.Headers()["X-Foo"])
 	// ProcessClientResponse should not have run
@@ -291,14 +290,14 @@ func (suite *clientSuite) TestCustomMarshaler() {
 
 	cl := NewClient().
 		Add(Call{
-		Uid:      "foo",
-		Service:  testServiceName,
-		Endpoint: "bulls--t",
-		Body:     map[string]string{},
-		Response: map[string]string{},
-		Headers: map[string]string{
-			marshaling.ContentTypeHeader: "application/bulls--t",
-			marshaling.AcceptHeader:      "application/bulls--t"}}).
+			Uid:      "foo",
+			Service:  testServiceName,
+			Endpoint: "bulls--t",
+			Body:     map[string]string{},
+			Response: map[string]string{},
+			Headers: map[string]string{
+				marshaling.ContentTypeHeader: "application/bulls--t",
+				marshaling.AcceptHeader:      "application/bulls--t"}}).
 		SetTransport(suite.trans).
 		SetTimeout(time.Second)
 
