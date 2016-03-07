@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime"
 
-	log "github.com/cihub/seelog"
+	log "github.com/mondough/slog"
 	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
 
@@ -38,7 +38,7 @@ func (e Endpoint) Handle(req mercury.Request) (rsp mercury.Response, err error) 
 	if req.Body() == nil && e.Request != nil {
 		if um := e.unmarshaler(req); um != nil {
 			if werr := terrors.Wrap(um.UnmarshalPayload(req), nil); werr != nil {
-				log.Warnf("[Mercury:Server] Cannot unmarshal request payload: %v", werr)
+				log.Warn(req, "[Mercury:Server] Cannot unmarshal request payload: %v", werr)
 				terr := werr.(*terrors.Error)
 				terr.Code = terrors.ErrBadRequest
 				rsp, err = nil, terr
@@ -52,7 +52,7 @@ func (e Endpoint) Handle(req mercury.Request) (rsp mercury.Response, err error) 
 			traceVerbose := make([]byte, 8000)
 			runtime.Stack(traceVerbose, true)
 			traceVerbose = bytes.TrimRight(traceVerbose, "\x00") // Remove trailing nuls (runtime.Stack is derpy)
-			log.Criticalf("[Mercury:Server] Recovered from handler panic for request %s: %v\n\n%s", req.Id(), v,
+			log.Critical(req, "[Mercury:Server] Recovered from handler panic for request %s: %v\n\n%s", req.Id(), v,
 				string(traceVerbose))
 			rsp, err = nil, terrors.InternalService(
 				"panic",

@@ -5,15 +5,15 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/cihub/seelog"
+	log "github.com/mondough/slog"
+	"github.com/mondough/terrors"
+	tperrors "github.com/mondough/terrors/proto"
+	tmsg "github.com/mondough/typhon/message"
 	"github.com/nu7hatch/gouuid"
 
 	"github.com/mondough/mercury"
 	"github.com/mondough/mercury/marshaling"
 	"github.com/mondough/mercury/transport"
-	"github.com/mondough/terrors"
-	tperrors "github.com/mondough/terrors/proto"
-	tmsg "github.com/mondough/typhon/message"
 )
 
 const defaultTimeout = 10 * time.Second
@@ -74,7 +74,7 @@ func (c *client) transport() transport.Transport {
 func (c *client) addCall(cc clientCall) {
 	select {
 	case <-c.execC:
-		log.Warn("[Mercury:Client] Request added after client execution; discarding")
+		log.Warn(cc.req, "[Mercury:Client] Request added after client execution; discarding")
 		return
 	default:
 	}
@@ -145,7 +145,7 @@ func (c *client) performCall(call clientCall, middleware []ClientMiddleware, tra
 	if id := req.Id(); id == "" {
 		_uuid, err := uuid.NewV4()
 		if err != nil {
-			log.Errorf("[Mercury:Client] Failed to generate request uuid: %v", err)
+			log.Error(call.req, "[Mercury:Client] Failed to generate request uuid: %v", err)
 			call.err = terrors.Wrap(err, nil).(*terrors.Error)
 			completion <- call
 			return
@@ -157,8 +157,6 @@ func (c *client) performCall(call clientCall, middleware []ClientMiddleware, tra
 	for _, md := range middleware {
 		req = md.ProcessClientRequest(req)
 	}
-
-	log.Debugf("[Mercury:Client] Sending request to %s/%s…", req.Service(), req.Endpoint())
 
 	rsp_, err := trans.Send(req, timeout)
 	if err != nil {
