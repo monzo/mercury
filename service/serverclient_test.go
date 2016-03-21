@@ -82,8 +82,7 @@ func (suite *clientServerSuite) TestE2E() {
 
 	cl := client.NewClient().
 		SetMiddleware(DefaultClientMiddleware()).
-		Add(
-		client.Call{
+		Add(client.Call{
 			Uid:      "call",
 			Service:  testServiceName,
 			Endpoint: "test",
@@ -116,13 +115,13 @@ func (suite *clientServerSuite) TestErrors() {
 	cl := client.NewClient().
 		SetMiddleware(DefaultClientMiddleware()).
 		Add(
-		client.Call{
-			Uid:      "call",
-			Service:  testServiceName,
-			Endpoint: "error",
-			Body:     &testproto.DummyRequest{},
-			Response: &testproto.DummyResponse{},
-		}).
+			client.Call{
+				Uid:      "call",
+				Service:  testServiceName,
+				Endpoint: "error",
+				Body:     &testproto.DummyRequest{},
+				Response: &testproto.DummyResponse{},
+			}).
 		SetTransport(suite.trans).
 		SetTimeout(time.Second).
 		Execute()

@@ -9,8 +9,7 @@ import (
 // protobuf
 func Req(ctx context.Context, service, endpoint string, req, res proto.Message) error {
 	return NewClient().
-		Add(
-		Call{
+		Add(Call{
 			Uid:      "1",
 			Service:  service,
 			Endpoint: endpoint,
