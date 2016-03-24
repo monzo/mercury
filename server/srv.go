@@ -226,10 +226,8 @@ func (s *server) handle(trans transport.Transport, req_ tmsg.Request) {
 		} else {
 			if rsp_, err := ep.Handle(req); err != nil {
 				rsp = ErrorResponse(req, err)
-				log.Info(req, "[Mercury:Server] Got error from endpoint %s for request %s: %v", ep.Name, req.Id(), err,
-					map[string]string{
-						"request_body":  fmt.Sprintf("%+v", req.Body()),
-						"response_body": fmt.Sprintf("%+v", rsp.Body())})
+				log.Info(req, "[Mercury:Server] Error from endpoint %s for %v: %v", ep.Name, req, err, map[string]string{
+					"request_payload": string(req.Payload())})
 			} else if rsp_ == nil {
 				rsp = req.Response(nil)
 			} else {
