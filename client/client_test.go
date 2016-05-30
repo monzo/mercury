@@ -150,7 +150,6 @@ func (suite *clientSuite) TestExecuting() {
 
 	suite.Assert().Empty(client.Errors())
 	suite.Require().NotNil(rsp)
-	suite.T().Logf("!! %s", string(rsp.Payload()))
 	suite.Assert().Equal("Pong", response.Pong)
 	suite.Assert().Equal(response, rsp.Body())
 	suite.Assert().Equal("Pong", rsp.Body().(*testproto.DummyResponse).Pong)
@@ -275,7 +274,6 @@ func (suite *clientSuite) TestMiddleware() {
 // TestParallelCalls verifies that many calls made in parallel are routed correctly, and their responses/errors are
 // available in the proper places.
 func (suite *clientSuite) TestParallelCalls() {
-	return
 	client := NewClient().
 		SetTimeout(5 * time.Second).
 		SetTransport(suite.trans)
