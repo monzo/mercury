@@ -120,10 +120,16 @@ func (c *client) Errors() ErrorSet {
 				copyParams[k] = v
 			}
 			err.Params = copyParams
-			err.Params[errUidField] = uid
+			if err.Params[errUidField] == "" {
+				err.Params[errUidField] = uid
+			}
 			if call.req != nil {
-				err.Params[errServiceField] = call.req.Service()
-				err.Params[errEndpointField] = call.req.Endpoint()
+				if err.Params[errServiceField] == "" {
+					err.Params[errServiceField] = call.req.Service()
+				}
+				if err.Params[errEndpointField] == "" {
+					err.Params[errEndpointField] = call.req.Endpoint()
+				}
 			}
 			errs = append(errs, &err)
 		}

@@ -10,6 +10,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mondough/terrors"
 	pe "github.com/mondough/terrors/proto"
+	"github.com/mondough/typhon/http"
+	"github.com/mondough/typhon/http/compat"
 	tmsg "github.com/mondough/typhon/message"
 	"github.com/mondough/typhon/mock"
 	"github.com/mondough/typhon/rabbit"
@@ -21,22 +23,38 @@ import (
 	"github.com/mondough/mercury/transport"
 )
 
+type destFilter struct {
+	httpsvc.Transport
+}
+
+func (d destFilter) Send(req httpsvc.Request) httpsvc.Response {
+	req.URL.Host = "127.0.0.1:30001"
+	return d.Transport.Send(req)
+}
+
 const testServiceName = "service.server-example"
 
 func TestServerSuite_MockTransport(t *testing.T) {
 	suite.Run(t, &serverSuite{
 		TransF: func() transport.Transport {
 			return mock.NewTransport()
-		},
-	})
+		}})
 }
 
 func TestServerSuite_RabbitTransport(t *testing.T) {
 	suite.Run(t, &serverSuite{
 		TransF: func() transport.Transport {
 			return rabbit.NewTransport()
-		},
-	})
+		}})
+}
+
+func TestServerSuite_HttpTransport(t *testing.T) {
+	suite.Run(t, &serverSuite{
+		TransF: func() transport.Transport {
+			trans := httpsvc.NetworkTransport(":30001")
+			trans = destFilter{trans}
+			return httpcompat.New2OldTransport(trans)
+		}})
 }
 
 type serverSuite struct {
@@ -200,7 +218,7 @@ func (suite *serverSuite) TestNilResponse() {
 }
 
 // TestEndpointNotFound tests that a Bad Request error is correctly returned on receiving an event for an unknown
-// endpoing
+// endpoint
 func (suite *serverSuite) TestEndpointNotFound() {
 	req := mercury.NewRequest()
 	req.SetService(testServiceName)
