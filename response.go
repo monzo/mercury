@@ -1,6 +1,8 @@
 package mercury
 
 import (
+	"fmt"
+
 	"github.com/mondough/terrors"
 	tperrors "github.com/mondough/terrors/proto"
 	tmsg "github.com/mondough/typhon/message"
@@ -46,6 +48,10 @@ func (r *response) Error() error {
 		return err // Don't return a nil but typed result
 	}
 	return nil
+}
+
+func (r *response) String() string {
+	return fmt.Sprintf("%v", r.Response)
 }
 
 func NewResponse() Response {

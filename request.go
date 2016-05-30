@@ -1,6 +1,7 @@
 package mercury
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -82,6 +83,10 @@ func (r *request) Copy() tmsg.Request {
 		Request: r.Request.Copy(),
 		ctx:     r.ctx,
 	}
+}
+
+func (r *request) String() string {
+	return fmt.Sprintf("%v", r.Request)
 }
 
 // Context implementation
