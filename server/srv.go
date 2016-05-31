@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -97,10 +98,13 @@ func (s *server) Endpoints() []Endpoint {
 	return result
 }
 
-func (s *server) Endpoint(name string) (Endpoint, bool) {
+func (s *server) Endpoint(path string) (Endpoint, bool) {
 	s.endpointsM.RLock()
 	defer s.endpointsM.RUnlock()
-	ep, ok := s.endpoints[name]
+	ep, ok := s.endpoints[path]
+	if !ok && strings.HasPrefix(path, "/") { // Try looking for a "legacy" match without the leading slack
+		ep, ok = s.endpoints[strings.TrimPrefix(path, "/")]
+	}
 	return ep, ok
 }
 

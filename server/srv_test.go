@@ -125,6 +125,23 @@ func (suite *serverSuite) TestRouting() {
 	response := rsp.Body().(*testproto.DummyResponse)
 	suite.Assert().Equal("routing", response.Pong)
 	suite.Assert().Equal("routing", rsp.Headers()["X-Ping-Pong"])
+
+	// Test "forward compatibility" with HTTP paths
+	req = mercury.NewRequest()
+	req.SetService(testServiceName)
+	req.SetEndpoint("/dummy")
+	req.SetBody(&testproto.DummyRequest{
+		Ping: "routing-fwd"})
+	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+	rsp, err = suite.trans.Send(req, time.Second)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(rsp)
+	suite.Require().NoError(tmsg.ProtoUnmarshaler(new(testproto.DummyResponse)).UnmarshalPayload(rsp))
+	suite.Require().NotNil(rsp.Body())
+	suite.Require().IsType(new(testproto.DummyResponse), rsp.Body())
+	response = rsp.Body().(*testproto.DummyResponse)
+	suite.Assert().Equal("routing-fwd", response.Pong)
+	suite.Assert().Equal("routing-fwd", rsp.Headers()["X-Ping-Pong"])
 }
 
 // TestErrorResponse tests that errors are serialised and returned to callers appropriately (as we are using the
