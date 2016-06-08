@@ -1,5 +1,7 @@
 # Mercury
 
+🚨 **Mercury is deprecated and is no longer maintained.** 🚨
+
 [![Build Status](https://travis-ci.org/mondough/mercury.svg?branch=master)](https://travis-ci.org/mondough/mercury)
 [![GoDoc](https://godoc.org/github.com/mondough/mercury?status.svg)](https://godoc.org/github.com/mondough/mercury)
 
