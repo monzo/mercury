@@ -10,8 +10,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mondough/terrors"
 	pe "github.com/mondough/terrors/proto"
-	"github.com/mondough/typhon/http"
-	"github.com/mondough/typhon/http/compat"
 	tmsg "github.com/mondough/typhon/message"
 	"github.com/mondough/typhon/mock"
 	"github.com/mondough/typhon/rabbit"
@@ -23,38 +21,22 @@ import (
 	"github.com/mondough/mercury/transport"
 )
 
-type destFilter struct {
-	httpsvc.Transport
-}
-
-func (d destFilter) Send(req httpsvc.Request) httpsvc.Response {
-	req.URL.Host = "127.0.0.1:30001"
-	return d.Transport.Send(req)
-}
-
 const testServiceName = "service.server-example"
 
 func TestServerSuite_MockTransport(t *testing.T) {
 	suite.Run(t, &serverSuite{
 		TransF: func() transport.Transport {
 			return mock.NewTransport()
-		}})
+		},
+	})
 }
 
 func TestServerSuite_RabbitTransport(t *testing.T) {
 	suite.Run(t, &serverSuite{
 		TransF: func() transport.Transport {
 			return rabbit.NewTransport()
-		}})
-}
-
-func TestServerSuite_HttpTransport(t *testing.T) {
-	suite.Run(t, &serverSuite{
-		TransF: func() transport.Transport {
-			trans := httpsvc.NetworkTransport(":30001")
-			trans = destFilter{trans}
-			return httpcompat.New2OldTransport(trans)
-		}})
+		},
+	})
 }
 
 type serverSuite struct {
@@ -125,23 +107,6 @@ func (suite *serverSuite) TestRouting() {
 	response := rsp.Body().(*testproto.DummyResponse)
 	suite.Assert().Equal("routing", response.Pong)
 	suite.Assert().Equal("routing", rsp.Headers()["X-Ping-Pong"])
-
-	// Test "forward compatibility" with HTTP paths
-	req = mercury.NewRequest()
-	req.SetService(testServiceName)
-	req.SetEndpoint("/dummy")
-	req.SetBody(&testproto.DummyRequest{
-		Ping: "routing-fwd"})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
-	rsp, err = suite.trans.Send(req, time.Second)
-	suite.Require().NoError(err)
-	suite.Require().NotNil(rsp)
-	suite.Require().NoError(tmsg.ProtoUnmarshaler(new(testproto.DummyResponse)).UnmarshalPayload(rsp))
-	suite.Require().NotNil(rsp.Body())
-	suite.Require().IsType(new(testproto.DummyResponse), rsp.Body())
-	response = rsp.Body().(*testproto.DummyResponse)
-	suite.Assert().Equal("routing-fwd", response.Pong)
-	suite.Assert().Equal("routing-fwd", rsp.Headers()["X-Ping-Pong"])
 }
 
 // TestErrorResponse tests that errors are serialised and returned to callers appropriately (as we are using the
@@ -235,7 +200,7 @@ func (suite *serverSuite) TestNilResponse() {
 }
 
 // TestEndpointNotFound tests that a Bad Request error is correctly returned on receiving an event for an unknown
-// endpoint
+// endpoing
 func (suite *serverSuite) TestEndpointNotFound() {
 	req := mercury.NewRequest()
 	req.SetService(testServiceName)
