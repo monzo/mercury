@@ -1,10 +1,6 @@
 package server
 
 import (
-	"bytes"
-	"fmt"
-	"runtime"
-
 	log "github.com/mondough/slog"
 	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
@@ -33,7 +29,7 @@ func (e Endpoint) unmarshaler(req mercury.Request) tmsg.Unmarshaler {
 
 // Handle takes an inbound Request, unmarshals it, dispatches it to the handler, and serialises the result as a
 // Response. Note that the response may be nil.
-func (e Endpoint) Handle(req mercury.Request) (rsp mercury.Response, err error) {
+func (e Endpoint) Handle(req mercury.Request) (mercury.Response, error) {
 	// Unmarshal the request body (unless there already is one)
 	if req.Body() == nil && e.Request != nil {
 		if um := e.unmarshaler(req); um != nil {
@@ -41,27 +37,10 @@ func (e Endpoint) Handle(req mercury.Request) (rsp mercury.Response, err error) 
 				log.Warn(req, "[Mercury:Server] Cannot unmarshal request payload: %v", werr)
 				terr := werr.(*terrors.Error)
 				terr.Code = terrors.ErrBadRequest
-				rsp, err = nil, terr
-				return
+				return nil, terr
 			}
 		}
 	}
 
-	defer func() {
-		if v := recover(); v != nil {
-			traceVerbose := make([]byte, 8000)
-			runtime.Stack(traceVerbose, true)
-			traceVerbose = bytes.TrimRight(traceVerbose, "\x00") // Remove trailing nuls (runtime.Stack is derpy)
-			log.Critical(req, "[Mercury:Server] Recovered from handler panic for request %s: %v\n\n%s", req.Id(), v,
-				string(traceVerbose))
-			rsp, err = nil, terrors.InternalService(
-				"panic",
-				fmt.Sprintf("Panic in handler %s: %v\n\n%s", req.Endpoint(), v, string(traceVerbose)),
-				map[string]string{
-					"err":   fmt.Sprintf("%v", v),
-					"stack": string(traceVerbose)})
-		}
-	}()
-	rsp, err = e.Handler(req)
-	return
+	return e.Handler(req)
 }
