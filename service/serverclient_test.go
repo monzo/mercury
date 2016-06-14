@@ -7,7 +7,6 @@ import (
 
 	"github.com/mondough/terrors"
 	"github.com/mondough/typhon/mock"
-	"github.com/mondough/typhon/rabbit"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondough/mercury"
@@ -24,13 +23,6 @@ func TestClientServerSuite_MockTransport(t *testing.T) {
 	suite.Run(t, &clientServerSuite{
 		TransF: func() transport.Transport {
 			return mock.NewTransport()
-		}})
-}
-
-func TestClientServerSuite_RabbitTransport(t *testing.T) {
-	suite.Run(t, &clientServerSuite{
-		TransF: func() transport.Transport {
-			return rabbit.NewTransport()
 		}})
 }
 

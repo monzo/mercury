@@ -7,8 +7,6 @@ import (
 	"net/url"
 	"strings"
 
-	"golang.org/x/net/context"
-
 	"github.com/mondough/mercury"
 	"github.com/mondough/typhon"
 )
@@ -40,7 +38,7 @@ func old2NewRequest(oldReq mercury.Request) typhon.Request {
 		ep = "/" + ep
 	}
 	v := typhon.Request{
-		Context: context.Background(),
+		Context: oldReq.Context(),
 		Request: http.Request{
 			Method: "POST",
 			URL: &url.URL{
@@ -62,18 +60,18 @@ func new2OldRequest(newReq typhon.Request) mercury.Request {
 	req := mercury.NewRequest()
 	req.SetService(newReq.Host)
 	req.SetEndpoint(newReq.URL.Path)
-	b, _ := ioutil.ReadAll(newReq.Body)
-	newReq.Body.Close()
-	req.SetPayload(b)
 	req.SetHeaders(fromHeader(newReq.Header))
+	b, _ := newReq.BodyBytes(true)
+	req.SetPayload(b)
 	req.SetId(newReq.Header.Get(legacyIdHeader))
+	req.SetContext(newReq)
 	return req
 }
 
 func old2NewResponse(req typhon.Request, oldRsp mercury.Response) typhon.Response {
 	rsp := typhon.NewResponse(req)
 	rsp.Header = toHeader(oldRsp.Headers())
-	rsp.Encode(oldRsp.Body())
+	rsp.Write(oldRsp.Payload())
 	rsp.Error = oldRsp.Error()
 	return rsp
 }

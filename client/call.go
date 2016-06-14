@@ -33,7 +33,7 @@ func (c Call) marshaler() tmsg.Marshaler {
 		result = marshaling.Marshaler(c.Headers[marshaling.ContentTypeHeader])
 	}
 	if result == nil {
-		result = tmsg.ProtoMarshaler()
+		result = tmsg.JSONMarshaler()
 	}
 	return result
 }

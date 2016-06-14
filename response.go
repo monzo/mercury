@@ -39,7 +39,7 @@ func (r *response) Error() error {
 	r2 := r.Copy()
 	um := marshaling.Unmarshaler(r2.Headers()[marshaling.ContentTypeHeader], &tperrors.Error{})
 	if um == nil {
-		um = marshaling.Unmarshaler(marshaling.ProtoContentType, &tperrors.Error{})
+		um = marshaling.Unmarshaler(marshaling.JSONContentType, &tperrors.Error{})
 	}
 	if umErr := um.UnmarshalPayload(r2); umErr != nil {
 		return umErr
@@ -59,7 +59,11 @@ func NewResponse() Response {
 }
 
 func FromTyphonResponse(rsp tmsg.Response) Response {
-	return &response{
-		Response: rsp,
+	switch rsp := rsp.(type) {
+	case Response:
+		return rsp
+	default:
+		return &response{
+			Response: rsp}
 	}
 }

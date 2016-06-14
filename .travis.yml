@@ -4,12 +4,6 @@ go:
   - 1.5.2
   - 1.6
 
-services:
-  - rabbitmq
-
-env:
-  - RABBIT_URL=amqp://guest:guest@localhost:5672
-
 install:
   - export PATH=${PATH}:${HOME}/gopath/bin
   - go get -v -t ./...

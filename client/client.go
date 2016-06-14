@@ -140,7 +140,7 @@ func (c *client) Errors() ErrorSet {
 func (c *client) unmarshaler(rsp mercury.Response, protocol interface{}) tmsg.Unmarshaler {
 	result := marshaling.Unmarshaler(rsp.Headers()[marshaling.ContentTypeHeader], protocol)
 	if result == nil { // Default to proto
-		result = marshaling.Unmarshaler(marshaling.ProtoContentType, protocol)
+		result = marshaling.Unmarshaler(marshaling.JSONContentType, protocol)
 	}
 	return result
 }

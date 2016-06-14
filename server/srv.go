@@ -277,7 +277,7 @@ func ErrorResponse(req mercury.Request, err error) mercury.Response {
 		terr = terrors.Wrap(err, nil).(*terrors.Error)
 	}
 	rsp.SetBody(terrors.Marshal(terr))
-	if err := tmsg.ProtoMarshaler().MarshalBody(rsp); err != nil {
+	if err := tmsg.JSONMarshaler().MarshalBody(rsp); err != nil {
 		log.Error(req, "[Mercury:Server] Failed to marshal error response: %v", err)
 		return nil // Not much we can do here
 	}

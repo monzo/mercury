@@ -39,8 +39,8 @@ func responseFromRequest(req Request, body interface{}) Response {
 
 		ct := req.Headers()[marshaling.AcceptHeader]
 		marshaler := marshaling.Marshaler(ct)
-		if marshaler == nil { // Fall back to proto
-			marshaler = marshaling.Marshaler(marshaling.ProtoContentType)
+		if marshaler == nil { // Fall back to JSON
+			marshaler = marshaling.Marshaler(marshaling.JSONContentType)
 		}
 		if marshaler == nil {
 			log.Error(req, "[Mercury] No marshaler for response %s: %s", rsp.Id(), ct)
@@ -112,8 +112,13 @@ func NewRequest() Request {
 }
 
 func FromTyphonRequest(req tmsg.Request) Request {
-	return &request{
-		Request: req,
-		ctx:     context.Background(),
+	switch req := req.(type) {
+	case Request:
+		return req
+	default:
+		return &request{
+			Request: req,
+			ctx:     context.Background(),
+		}
 	}
 }
