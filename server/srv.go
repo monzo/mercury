@@ -102,7 +102,7 @@ func (s *server) Endpoint(path string) (Endpoint, bool) {
 	s.endpointsM.RLock()
 	defer s.endpointsM.RUnlock()
 	ep, ok := s.endpoints[path]
-	if !ok && strings.HasPrefix(path, "/") { // Try looking for a "legacy" match without the leading slack
+	if !ok && strings.HasPrefix(path, "/") { // Try looking for a "legacy" match without the leading slash
 		ep, ok = s.endpoints[strings.TrimPrefix(path, "/")]
 	}
 	return ep, ok
