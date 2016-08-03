@@ -24,7 +24,11 @@ type Endpoint struct {
 }
 
 func (e Endpoint) unmarshaler(req mercury.Request) tmsg.Unmarshaler {
-	return marshaling.Unmarshaler(req.Headers()[marshaling.ContentTypeHeader], e.Request)
+	result := marshaling.Unmarshaler(req.Headers()[marshaling.ContentTypeHeader], e.Request)
+	if result == nil { // Default to json
+		result = marshaling.Unmarshaler(marshaling.JSONContentType, e.Request)
+	}
+	return result
 }
 
 // Handle takes an inbound Request, unmarshals it, dispatches it to the handler, and serialises the result as a
