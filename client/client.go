@@ -120,9 +120,7 @@ func (c *client) Errors() ErrorSet {
 				copyParams[k] = v
 			}
 			err.Params = copyParams
-			if err.Params[errUidField] == "" {
-				err.Params[errUidField] = uid
-			}
+			err.Params[errUidField] = uid
 			if call.req != nil {
 				if err.Params[errServiceField] == "" {
 					err.Params[errServiceField] = call.req.Service()
