@@ -9,7 +9,7 @@ import (
 func Req(ctx context.Context, service, endpoint string, req, res interface{}) error {
 	return NewClient().
 		Add(Call{
-			Uid:      "1",
+			Uid:      "default",
 			Service:  service,
 			Endpoint: endpoint,
 			Body:     req,
