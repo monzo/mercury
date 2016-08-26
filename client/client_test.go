@@ -8,7 +8,6 @@ import (
 	"github.com/mondough/terrors"
 	tmsg "github.com/mondough/typhon/message"
 	"github.com/mondough/typhon/mock"
-	"github.com/mondough/typhon/rabbit"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondough/mercury"
@@ -23,14 +22,6 @@ func TestClientSuite_MockTransport(t *testing.T) {
 	suite.Run(t, &clientSuite{
 		TransF: func() transport.Transport {
 			return mock.NewTransport()
-		},
-	})
-}
-
-func TestClientSuite_RabbitTransport(t *testing.T) {
-	suite.Run(t, &clientSuite{
-		TransF: func() transport.Transport {
-			return rabbit.NewTransport()
 		},
 	})
 }
@@ -85,7 +76,7 @@ func (suite *clientSuite) SetupSuite() {
 					rsp := req.Response(&testproto.DummyResponse{
 						Pong: "Pong"})
 					rsp.SetHeaders(req.Headers())
-					suite.Require().NoError(tmsg.ProtoMarshaler().MarshalBody(rsp))
+					suite.Require().NoError(tmsg.JSONMarshaler().MarshalBody(rsp))
 					suite.Require().NoError(trans.Respond(req, rsp))
 				}
 
@@ -310,15 +301,13 @@ func (suite *clientSuite) TestCustomMarshaler() {
 	}, rsp.Body().(map[string]string))
 }
 
-type invalidBodyT struct{}
-
 // TestInvalidBody verifies that an incorrect type passed as the `Body` returns a "bad request" error
 func (suite *clientSuite) TestInvalidBody() {
 	cl := NewClient().Add(Call{
 		Uid:      "call",
-		Service:  "notathing", // We would get a timeout if the service *did* exist
+		Service:  "notathing", // We would get a timeout if the service *did not* exist
 		Endpoint: "reallynotathing",
-		Body:     invalidBodyT{},
+		Body:     make(chan struct{}),
 		Response: &testproto.DummyResponse{},
 	}).
 		SetTransport(suite.trans)

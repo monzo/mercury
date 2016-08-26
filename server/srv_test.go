@@ -1,18 +1,16 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
 	"math/rand"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/mondough/terrors"
 	pe "github.com/mondough/terrors/proto"
 	tmsg "github.com/mondough/typhon/message"
 	"github.com/mondough/typhon/mock"
-	"github.com/mondough/typhon/rabbit"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondough/mercury"
@@ -27,14 +25,6 @@ func TestServerSuite_MockTransport(t *testing.T) {
 	suite.Run(t, &serverSuite{
 		TransF: func() transport.Transport {
 			return mock.NewTransport()
-		},
-	})
-}
-
-func TestServerSuite_RabbitTransport(t *testing.T) {
-	suite.Run(t, &serverSuite{
-		TransF: func() transport.Transport {
-			return rabbit.NewTransport()
 		},
 	})
 }
@@ -95,13 +85,13 @@ func (suite *serverSuite) TestRouting() {
 	req.SetEndpoint("dummy")
 	req.SetBody(&testproto.DummyRequest{
 		Ping: "routing"})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+	suite.Assert().NoError(tmsg.JSONMarshaler().MarshalBody(req))
 
 	rsp, err := suite.trans.Send(req, time.Second)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(rsp)
 
-	suite.Require().NoError(tmsg.ProtoUnmarshaler(new(testproto.DummyResponse)).UnmarshalPayload(rsp))
+	suite.Require().NoError(tmsg.JSONUnmarshaler(new(testproto.DummyResponse)).UnmarshalPayload(rsp))
 	suite.Require().NotNil(rsp.Body())
 	suite.Require().IsType(new(testproto.DummyResponse), rsp.Body())
 	response := rsp.Body().(*testproto.DummyResponse)
@@ -127,7 +117,7 @@ func (suite *serverSuite) TestErrorResponse() {
 	req.SetEndpoint("err")
 	req.SetBody(&testproto.DummyRequest{
 		Ping: "Foo bar baz"})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+	suite.Assert().NoError(tmsg.JSONMarshaler().MarshalBody(req))
 
 	rsp_, err := suite.trans.Send(req, time.Second)
 	suite.Assert().NoError(err)
@@ -136,44 +126,11 @@ func (suite *serverSuite) TestErrorResponse() {
 	suite.Assert().True(rsp.IsError())
 
 	errResponse := &pe.Error{}
-	suite.Assert().NoError(proto.Unmarshal(rsp.Payload(), errResponse))
+	suite.Assert().NoError(json.Unmarshal(rsp.Payload(), errResponse))
 	terr := terrors.Unmarshal(errResponse)
 	suite.Require().NotNil(terr)
 	suite.Assert().Equal("Foo bar baz", terr.Message, string(rsp.Payload()))
 	suite.Assert().Equal(terrors.ErrNotFound, terr.Code)
-}
-
-// TestPanicResponse tests that panics result in an appropriate internal service error with the panic stack in the
-// error context.
-func (suite *serverSuite) TestPanicResponse() {
-	srv := suite.server
-	srv.AddEndpoints(Endpoint{
-		Name:     "panic",
-		Request:  new(testproto.DummyRequest),
-		Response: new(testproto.DummyResponse),
-		Handler: func(req mercury.Request) (mercury.Response, error) {
-			panic("FOOBARBAZ")
-		}})
-
-	req := mercury.NewRequest()
-	req.SetService(testServiceName)
-	req.SetEndpoint("panic")
-	req.SetBody(&testproto.DummyRequest{})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
-
-	rsp_, err := suite.trans.Send(req, time.Second)
-	suite.Require().NoError(err)
-	suite.Require().NotNil(rsp_)
-	rsp := mercury.FromTyphonResponse(rsp_)
-	suite.Assert().True(rsp.IsError())
-
-	errResponse := &pe.Error{}
-	suite.Assert().NoError(proto.Unmarshal(rsp.Payload(), errResponse))
-	terr := terrors.Unmarshal(errResponse)
-	suite.Require().NotNil(terr)
-	suite.Assert().Equal(fmt.Sprintf("%s.panic", terrors.ErrInternalService), terr.Code)
-	suite.Assert().Equal(terr.Params["err"], "FOOBARBAZ")
-	suite.Assert().Contains(terr.Params["stack"], "goroutine") // All traces contain "goroutine x:" lines
 }
 
 // TestNilResponse tests that a nil response correctly returns a Response with an empty payload to the caller
@@ -190,7 +147,7 @@ func (suite *serverSuite) TestNilResponse() {
 	req := mercury.NewRequest()
 	req.SetService(testServiceName)
 	req.SetBody(&testproto.DummyRequest{})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+	suite.Assert().NoError(tmsg.JSONMarshaler().MarshalBody(req))
 	req.SetEndpoint("nil")
 
 	rsp, err := suite.trans.Send(req, time.Second)
@@ -207,7 +164,7 @@ func (suite *serverSuite) TestEndpointNotFound() {
 	req.SetEndpoint("dummy")
 	req.SetBody(&testproto.DummyRequest{
 		Ping: "routing"})
-	suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+	suite.Assert().NoError(tmsg.JSONMarshaler().MarshalBody(req))
 
 	rsp_, err := suite.trans.Send(req, time.Second)
 	rsp := mercury.FromTyphonResponse(rsp_)
@@ -215,7 +172,7 @@ func (suite *serverSuite) TestEndpointNotFound() {
 	suite.Require().NotNil(rsp)
 	suite.Assert().True(rsp.IsError())
 
-	suite.Assert().NoError(tmsg.ProtoUnmarshaler(new(pe.Error)).UnmarshalPayload(rsp))
+	suite.Assert().NoError(tmsg.JSONUnmarshaler(new(pe.Error)).UnmarshalPayload(rsp))
 	suite.Assert().IsType(new(pe.Error), rsp.Body())
 	terr := terrors.Unmarshal(rsp.Body().(*pe.Error))
 	suite.Assert().Equal(terrors.ErrBadRequest+".endpoint_not_found", terr.Code)
@@ -270,7 +227,7 @@ func (suite *serverSuite) TestRoutingParallel() {
 	workers := 200
 	wg := sync.WaitGroup{}
 	wg.Add(workers)
-	unmarshaler := tmsg.ProtoUnmarshaler(new(testproto.DummyResponse))
+	unmarshaler := tmsg.JSONUnmarshaler(new(testproto.DummyResponse))
 	work := func(i int) {
 		defer wg.Done()
 		rng := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -280,7 +237,7 @@ func (suite *serverSuite) TestRoutingParallel() {
 			req.SetService(testServiceName)
 			req.SetEndpoint(ep)
 			req.SetBody(&testproto.DummyRequest{})
-			suite.Assert().NoError(tmsg.ProtoMarshaler().MarshalBody(req))
+			suite.Assert().NoError(tmsg.JSONMarshaler().MarshalBody(req))
 
 			rsp, err := suite.trans.Send(req, time.Second)
 			suite.Require().NoError(err)

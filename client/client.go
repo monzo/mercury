@@ -122,8 +122,12 @@ func (c *client) Errors() ErrorSet {
 			err.Params = copyParams
 			err.Params[errUidField] = uid
 			if call.req != nil {
-				err.Params[errServiceField] = call.req.Service()
-				err.Params[errEndpointField] = call.req.Endpoint()
+				if err.Params[errServiceField] == "" {
+					err.Params[errServiceField] = call.req.Service()
+				}
+				if err.Params[errEndpointField] == "" {
+					err.Params[errEndpointField] = call.req.Endpoint()
+				}
 			}
 			errs = append(errs, &err)
 		}
@@ -133,8 +137,8 @@ func (c *client) Errors() ErrorSet {
 
 func (c *client) unmarshaler(rsp mercury.Response, protocol interface{}) tmsg.Unmarshaler {
 	result := marshaling.Unmarshaler(rsp.Headers()[marshaling.ContentTypeHeader], protocol)
-	if result == nil { // Default to proto
-		result = marshaling.Unmarshaler(marshaling.ProtoContentType, protocol)
+	if result == nil { // Default to json
+		result = marshaling.Unmarshaler(marshaling.JSONContentType, protocol)
 	}
 	return result
 }

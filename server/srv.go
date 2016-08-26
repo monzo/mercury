@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -97,10 +98,13 @@ func (s *server) Endpoints() []Endpoint {
 	return result
 }
 
-func (s *server) Endpoint(name string) (Endpoint, bool) {
+func (s *server) Endpoint(path string) (Endpoint, bool) {
 	s.endpointsM.RLock()
 	defer s.endpointsM.RUnlock()
-	ep, ok := s.endpoints[name]
+	ep, ok := s.endpoints[path]
+	if !ok && strings.HasPrefix(path, "/") { // Try looking for a "legacy" match without the leading slash
+		ep, ok = s.endpoints[strings.TrimPrefix(path, "/")]
+	}
 	return ep, ok
 }
 
@@ -273,7 +277,7 @@ func ErrorResponse(req mercury.Request, err error) mercury.Response {
 		terr = terrors.Wrap(err, nil).(*terrors.Error)
 	}
 	rsp.SetBody(terrors.Marshal(terr))
-	if err := tmsg.ProtoMarshaler().MarshalBody(rsp); err != nil {
+	if err := tmsg.JSONMarshaler().MarshalBody(rsp); err != nil {
 		log.Error(req, "[Mercury:Server] Failed to marshal error response: %v", err)
 		return nil // Not much we can do here
 	}

@@ -1,6 +1,8 @@
 package mercury
 
 import (
+	"fmt"
+
 	"github.com/mondough/terrors"
 	tperrors "github.com/mondough/terrors/proto"
 	tmsg "github.com/mondough/typhon/message"
@@ -37,7 +39,7 @@ func (r *response) Error() error {
 	r2 := r.Copy()
 	um := marshaling.Unmarshaler(r2.Headers()[marshaling.ContentTypeHeader], &tperrors.Error{})
 	if um == nil {
-		um = marshaling.Unmarshaler(marshaling.ProtoContentType, &tperrors.Error{})
+		um = marshaling.Unmarshaler(marshaling.JSONContentType, &tperrors.Error{})
 	}
 	if umErr := um.UnmarshalPayload(r2); umErr != nil {
 		return umErr
@@ -48,12 +50,20 @@ func (r *response) Error() error {
 	return nil
 }
 
+func (r *response) String() string {
+	return fmt.Sprintf("%v", r.Response)
+}
+
 func NewResponse() Response {
 	return FromTyphonResponse(tmsg.NewResponse())
 }
 
 func FromTyphonResponse(rsp tmsg.Response) Response {
-	return &response{
-		Response: rsp,
+	switch rsp := rsp.(type) {
+	case Response:
+		return rsp
+	default:
+		return &response{
+			Response: rsp}
 	}
 }

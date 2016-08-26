@@ -3,14 +3,12 @@ package marshaling
 import (
 	"sync"
 
-	"github.com/golang/protobuf/proto"
 	tmsg "github.com/mondough/typhon/message"
 )
 
 const (
 	ContentTypeHeader = "Content-Type"
 	AcceptHeader      = "Accept"
-	ProtoContentType  = tmsg.ProtoContentType
 	JSONContentType   = tmsg.JSONContentType
 )
 
@@ -25,12 +23,6 @@ type marshalerPair struct {
 var (
 	marshalerRegistryM sync.RWMutex
 	marshalerRegistry  = map[string]marshalerPair{
-		ProtoContentType: {
-			m: tmsg.ProtoMarshaler,
-			// Wrapped so we can type assert the interface{} to a proto.Message
-			u: func(protocol interface{}) tmsg.Unmarshaler {
-				return tmsg.ProtoUnmarshaler(protocol.(proto.Message))
-			}},
 		JSONContentType: {
 			m: tmsg.JSONMarshaler,
 			u: tmsg.JSONUnmarshaler},
