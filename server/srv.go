@@ -6,15 +6,15 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/mondough/slog"
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
-	ttrans "github.com/mondough/typhon/transport"
+	log "github.com/monzo/slog"
+	"github.com/monzo/terrors"
+	tmsg "github.com/monzo/typhon/message"
+	ttrans "github.com/monzo/typhon/transport"
 	"golang.org/x/net/context"
 	"gopkg.in/tomb.v2"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/transport"
 )
 
 const (

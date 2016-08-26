@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
-	"github.com/mondough/typhon/mock"
+	"github.com/monzo/terrors"
+	tmsg "github.com/monzo/typhon/message"
+	"github.com/monzo/typhon/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/marshaling"
-	"github.com/mondough/mercury/testproto"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/marshaling"
+	"github.com/monzo/mercury/testproto"
+	"github.com/monzo/mercury/transport"
 )
 
 const testServiceName = "service.client-example"

@@ -1,12 +1,12 @@
 package server
 
 import (
-	log "github.com/mondough/slog"
-	"github.com/mondough/terrors"
-	tmsg "github.com/mondough/typhon/message"
+	log "github.com/monzo/slog"
+	"github.com/monzo/terrors"
+	tmsg "github.com/monzo/typhon/message"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/marshaling"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/marshaling"
 )
 
 type Handler func(req mercury.Request) (mercury.Response, error)

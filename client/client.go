@@ -5,15 +5,15 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/mondough/slog"
-	"github.com/mondough/terrors"
-	tperrors "github.com/mondough/terrors/proto"
-	tmsg "github.com/mondough/typhon/message"
+	log "github.com/monzo/slog"
+	"github.com/monzo/terrors"
+	tperrors "github.com/monzo/terrors/proto"
+	tmsg "github.com/monzo/typhon/message"
 	"github.com/nu7hatch/gouuid"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/marshaling"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/marshaling"
+	"github.com/monzo/mercury/transport"
 )
 
 const defaultTimeout = 10 * time.Second

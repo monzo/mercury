@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mondough/mercury/server"
-	"github.com/mondough/typhon"
+	"github.com/monzo/mercury/server"
+	"github.com/monzo/typhon"
 )
 
 func CompatServer(srv server.Server) typhon.Filter {

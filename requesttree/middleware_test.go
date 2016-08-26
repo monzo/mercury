@@ -3,15 +3,15 @@ package requesttree
 import (
 	"testing"
 
-	"github.com/mondough/typhon/mock"
+	"github.com/monzo/typhon/mock"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/net/context"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/client"
-	"github.com/mondough/mercury/server"
-	"github.com/mondough/mercury/testproto"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/client"
+	"github.com/monzo/mercury/server"
+	"github.com/monzo/mercury/testproto"
+	"github.com/monzo/mercury/transport"
 )
 
 const testOriginServiceName = "service.requesttree-origin"

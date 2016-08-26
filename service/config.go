@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury/transport"
 )
 
 type Config struct {

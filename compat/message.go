@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/typhon"
+	"github.com/monzo/mercury"
+	"github.com/monzo/typhon"
 )
 
 const legacyIdHeader = "Legacy-Id"

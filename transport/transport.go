@@ -3,7 +3,7 @@ package transport
 import (
 	"sync"
 
-	ttrans "github.com/mondough/typhon/transport"
+	ttrans "github.com/monzo/typhon/transport"
 )
 
 type Transport ttrans.Transport
