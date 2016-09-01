@@ -3,10 +3,10 @@ package client
 import (
 	"time"
 
-	"github.com/mondough/terrors"
+	"github.com/monzo/terrors"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/transport"
 )
 
 // A Client is a convenient way to make Requests (potentially in parallel) and access their Responses/Errors.

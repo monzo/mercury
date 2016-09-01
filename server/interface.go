@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/transport"
 )
 
 // A Server provides Endpoint RPC functionality atop a typhon Transport.

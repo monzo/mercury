@@ -5,16 +5,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mondough/terrors"
-	"github.com/mondough/typhon/mock"
+	"github.com/monzo/terrors"
+	"github.com/monzo/typhon/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondough/mercury"
-	"github.com/mondough/mercury/client"
-	"github.com/mondough/mercury/marshaling"
-	"github.com/mondough/mercury/server"
-	"github.com/mondough/mercury/testproto"
-	"github.com/mondough/mercury/transport"
+	"github.com/monzo/mercury"
+	"github.com/monzo/mercury/client"
+	"github.com/monzo/mercury/marshaling"
+	"github.com/monzo/mercury/server"
+	"github.com/monzo/mercury/testproto"
+	"github.com/monzo/mercury/transport"
 )
 
 const testServiceName = "service.client-server-example"

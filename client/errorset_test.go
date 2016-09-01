@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/mondough/terrors"
+	"github.com/monzo/terrors"
 	"github.com/stretchr/testify/suite"
 )
 

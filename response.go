@@ -3,11 +3,11 @@ package mercury
 import (
 	"fmt"
 
-	"github.com/mondough/terrors"
-	tperrors "github.com/mondough/terrors/proto"
-	tmsg "github.com/mondough/typhon/message"
+	"github.com/monzo/terrors"
+	tperrors "github.com/monzo/terrors/proto"
+	tmsg "github.com/monzo/typhon/message"
 
-	"github.com/mondough/mercury/marshaling"
+	"github.com/monzo/mercury/marshaling"
 )
 
 type Response interface {

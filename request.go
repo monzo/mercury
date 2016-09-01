@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/mondough/slog"
-	tmsg "github.com/mondough/typhon/message"
+	log "github.com/monzo/slog"
+	tmsg "github.com/monzo/typhon/message"
 	"golang.org/x/net/context"
 
-	"github.com/mondough/mercury/marshaling"
+	"github.com/monzo/mercury/marshaling"
 )
 
 const (

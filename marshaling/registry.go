@@ -3,7 +3,7 @@ package marshaling
 import (
 	"sync"
 
-	tmsg "github.com/mondough/typhon/message"
+	tmsg "github.com/monzo/typhon/message"
 )
 
 const (
